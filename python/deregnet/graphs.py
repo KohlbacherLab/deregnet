@@ -5,7 +5,6 @@ import os
 import zipfile
 
 import requests
-import rarfile
 import pandas as pd
 import igraph as ig
 
@@ -332,7 +331,7 @@ class ReactomeFI(DeregnetGraph):
         self.list_valued_interaction_type_attr = True
 
         self.vs['symbol'] = self.vs['name']
-        self.map_nodes_to_multiple_targets(BioMap.get_mapper('hgnc'),
+        self.map_nodes_to_multiple_targets(BioMap().get_mapper('hgnc'),
                                            TO=['entrez', 'ensembl', 'uniprot_ids', 'mgi_id'],
                                            target_attrs=['entrez', 'ensembl', 'uniprot_ids', 'mgi_id'])
 
@@ -378,7 +377,7 @@ class KEGG(DeregnetGraph):
         super().__init__(make_edges_unique, **igraph_init_kwargs)
         self.vs['name'] = [ID.split(':')[-1] for ID in self.vs['name']]
         if species == 'hsa':
-            self.map_nodes_to_multiple_targets(BioMap.get_mapper('hgnc'),
+            self.map_nodes_to_multiple_targets(BioMap().get_mapper('hgnc'),
                                                FROM='entrez',
                                                TO=['entrez',
                                                    'ensembl',
@@ -389,11 +388,11 @@ class KEGG(DeregnetGraph):
                                                              'symbol',
                                                              'uniprot_ids'])
         elif species == 'mmu':
-            self.map_nodes_to_multiple_targets(BioMap.get_mapper('mgi_entrez'),
+            self.map_nodes_to_multiple_targets(BioMap().get_mapper('mgi_entrez'),
                                                FROM='entrez',
                                                TO=['entrez', 'symbol', 'name'],
                                                target_attrs=['entrez', 'symbol', 'name'])
-            self.map_nodes(BioMap.get_mapper('mgi_ensembl'),
+            self.map_nodes(BioMap().get_mapper('mgi_ensembl'),
                            FROM='symbol', TO='ensembl',
                            source_attr='symbol', target_attr='ensembl')
 
@@ -467,7 +466,7 @@ class PathwayCommons(DeregnetGraph):
 
         super().__init__(make_edges_unique, **igraph_init_kwargs)
 
-        hgnc = BioMap.get_mapper('hgnc')
+        hgnc = BioMap().get_mapper('hgnc')
         self.vs['symbol'] = hgnc.map(self.vs['name'], TO='symbol')
         self.map_nodes_to_multiple_targets(hgnc,
                                            TO=['entrez', 'ensembl', 'uniprot_ids', 'mgd_id'],
@@ -475,9 +474,9 @@ class PathwayCommons(DeregnetGraph):
 
     def map_to_mouse(self):
         mouse_graph = self.expand_nodes('mgi_id', keep=('symbol', None))
-        mgi_ensembl = BioMap.get_mapper('mgi_ensembl')
+        mgi_ensembl = BioMap().get_mapper('mgi_ensembl')
         mouse_graph.map_nodes_to_multiple_targets(mgi_ensembl, TO=['symbol', 'ensembl_id'], target_attrs=['symbol', 'ensembl'])
-        mgi_entrez = BioMap.get_mapper('mgi_entrez')
+        mgi_entrez = BioMap().get_mapper('mgi_entrez')
         mouse_graph.map_nodes(mgi_entrez, TO='entrez_id', target_attr='entrez')
         return mouse_graph
 
@@ -664,19 +663,19 @@ class RegNetwork(DeregnetGraph):
         self.vs['tf'] = [(v.index in tfs) if v['protein_coding'] else False for v in self.vs]
         self.vs['node_type'] = ['gene' if v['protein_coding'] else 'mirna' for v in self.vs]
         self.vs['node_type'] = [self.vs['node_type'][i] if not v['tf'] else 'tf' for i, v in enumerate(self.vs)]
-        self.map_nodes(BioMap.get_mapper('mirbase'), TO='alias', target_attr='mirna_alias')
+        self.map_nodes(BioMap().get_mapper('mirbase'), TO='alias', target_attr='mirna_alias')
         # TODO: map MiRBase families
         if self.species == 'hsa':
-            self.map_nodes_to_multiple_targets(BioMap.get_mapper('hgnc'),
+            self.map_nodes_to_multiple_targets(BioMap().get_mapper('hgnc'),
                                                FROM='entrez_id',
                                                TO=['entrez_id', 'ensembl_id', 'symbol'],
                                                target_attrs=['entrez', 'ensembl', 'symbol'])
         else:
-            self.map_nodes_to_multiple_targets(BioMap.get_mapper('mgi_entrez'),
+            self.map_nodes_to_multiple_targets(BioMap().get_mapper('mgi_entrez'),
                                                FROM='entrez',
                                                TO=['entrez', 'symbol', 'name'],
                                                target_attrs=['entrez', 'symbol', 'name'])
-            self.map_nodes(BioMap.get_mapper('mgi_ensembl'),
+            self.map_nodes(BioMap().get_mapper('mgi_ensembl'),
                            FROM='symbol', TO='ensembl',
                            source_attr='symbol', target_attr='ensembl')
             self.vs['name'] = [','.join(v['mirna_alias']).split(',')[0].split(self.species+'-')[-1] if v['mirna'] else v['symbol'] for v in self.vs]
@@ -728,6 +727,9 @@ class RegNetwork(DeregnetGraph):
 
     @classmethod
     def get(cls, species='hsa', directed=True, sources=False, local_path=None, **kwargs):
+        # ---
+        import rarfile
+        # ---
         species = 'human' if species == 'hsa' else 'mouse'
         what = species if not directed else 'RegulatoryDirections'
         local_path = DEFAULT_REG_NETWORK_LOCAL_PATH if local_path is None else local_path
