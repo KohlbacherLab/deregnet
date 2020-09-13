@@ -73,7 +73,7 @@ jobs:
       - name: Log into registry
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-          echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login docker.io -u sebwink --password-stdin
+          #echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login docker.io -u sebwink --password-stdin
       - name: Push image
         run: |
           DEFAULT_GUROBI_VERSION=$(cat $GUROBI_VERSIONS | tail -n 1)
