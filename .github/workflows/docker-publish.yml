@@ -73,7 +73,7 @@ jobs:
       - name: Log into registry
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-          echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login docker.io -u sebwink --password-stdin
+          #echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login docker.io -u sebwink --password-stdin
       - name: Push image
         run: |
           DEFAULT_GUROBI_VERSION=$(cat $GUROBI_VERSIONS | tail -n 1)
@@ -106,14 +106,14 @@ jobs:
             docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_GITHUB_PKG-grb$GUROBI_VERSION:$VERSION
             docker push $IMAGE_ID_GITHUB_PKG-grb$GUROBI_VERSION:$VERSION
             
-            docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:grb$GUROBI_VERSION 
-            docker push $IMAGE_ID_DOCKER_HUB:grb$GUROBI_VERSION
-            docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$GIT_HASH
-            docker push $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$GIT_HASH
-            docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:latest
-            docker push $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:latest
-            docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$VERSION
-            docker push $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$VERSION
+            #docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:grb$GUROBI_VERSION 
+            #docker push $IMAGE_ID_DOCKER_HUB:grb$GUROBI_VERSION
+            #docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$GIT_HASH
+            #docker push $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$GIT_HASH
+            #docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:latest
+            #docker push $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:latest
+            #docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$VERSION
+            #docker push $IMAGE_ID_DOCKER_HUB-grb$GUROBI_VERSION:$VERSION
 
             echo $GUROBI_VERSION 
             echo $DEFAULT_GUROBI_VERSION
@@ -125,12 +125,12 @@ jobs:
               docker push $IMAGE_ID_GITHUB_PKG:$GIT_HASH
               docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_GITHUB_PKG:latest
               docker push $IMAGE_ID_GITHUB_PKG:latest
-              docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:$VERSION
-              docker push $IMAGE_ID_DOCKER_HUB:$VERSION
-              docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:$GIT_HASH
-              docker push $IMAGE_ID_DOCKER_HUB:$GIT_HASH
-              docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:latest
-              docker push $IMAGE_ID_DOCKER_HUB:latest
+              #docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:$VERSION
+              #docker push $IMAGE_ID_DOCKER_HUB:$VERSION
+              #docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:$GIT_HASH
+              #docker push $IMAGE_ID_DOCKER_HUB:$GIT_HASH
+              #docker tag $IMAGE_NAME-$GUROBI_VERSION $IMAGE_ID_DOCKER_HUB:latest
+              #docker push $IMAGE_ID_DOCKER_HUB:latest
             fi 
 
           done
