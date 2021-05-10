@@ -15,8 +15,29 @@ USER root
 RUN apt-get update && \
     apt-get upgrade -y && \
 	apt-get install -y build-essential && \
-	apt-get install -y python3-dev python3-pip cmake && \
+	apt-get install -y python3-dev python3-pip && \
 	mkdir /deregnet
+
+# CMAKE version
+ARG CMAKE_VERSION
+ENV CMAKE_VERSION=${CMAKE_VERSION:-3.20.1}
+
+# CMAKE
+RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz && \
+    tar xvf cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz && rm cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz && \
+    cd cmake-${CMAKE_VERSION}-linux-x86_64 && \
+    cp bin/* /usr/local/bin/ && \
+    mkdir -p /usr/local/man/man1 && \
+    cp man/man1/* /usr/local/man/man1/ && \
+    mkdir -p /usr/local/man/man7 && \
+    cp man/man7/* /usr/local/man/man7/ && \
+    mkdir -p /usr/local/doc && \
+    cp -r doc/cmake /usr/local/doc/ && \
+    mkdir -p /usr/local/share/bash-completion/completions && \
+    cp share/bash-completion/completions/* /usr/local/share/bash-completion/completions/ && \
+    CMAKE_MAJOR_MINOR=$(echo $CMAKE_VERSION | sed "s/\([0-9]\+\.[0-9]\+\)\.[0-9]\+/\1/g") && \
+    cp -r share/cmake-${CMAKE_MAJOR_MINOR} /usr/local/share/cmake-${CMAKE_MAJOR_MINOR} && \
+    cd .. && rm -r cmake-${CMAKE_VERSION}-linux-x86_64
 
 WORKDIR /deregnet 
 
